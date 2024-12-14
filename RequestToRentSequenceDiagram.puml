@@ -1,0 +1,26 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+title Sequence Diagram: Borrower Chooses an Item and Lender Responds
+
+actor Borrower
+actor Lender
+participant "System" as System
+participant "NotificationService" as Notification
+
+Borrower -> System: Browse items
+Borrower -> System: Select rentable item
+Borrower -> System: Enter start and end date
+Borrower -> System: Submit rental request
+Notification -> Lender: Send rental request notification
+
+alt Lender accepts request
+    Lender -> System: Accept request
+    Notification -> Borrower: Send "Accept" notification
+else Lender declines request
+    Lender -> System: Decline request
+    Notification -> Borrower: Send "Decline" notification
+'endif
+
+
+@enduml

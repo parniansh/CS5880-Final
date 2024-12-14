@@ -1,0 +1,144 @@
+@startuml
+'https://plantuml.com/activity-diagram-beta
+
+start
+title Borrower Chooses an Item and Lender Responds
+:Borrower browses items;
+:Borrower selects a rentable item;
+:Borrower enters start and end date for renting;
+:Borrower submits rental request;
+:Notification sent to lender;
+
+if (Lender accepts request?) then (yes)
+    :Send "Accept" notification to borrower;
+    :Order status updated to "Accepted";
+else (no)
+    :Send "Decline" notification to borrower;
+    :Order status updated to "Declined";
+endif
+
+stop
+@enduml
+
+@startuml
+title Borrower Returns the Rentable Item
+
+
+start
+
+:Borrower reaches return due date;
+repeat
+    :Borrower pushes "Return Item" button;
+    :Order status updated to "Returning";
+    :Item status updated to "Unavailable";
+    :Payment calculated based on daily price;
+    :Borrower directed to payment page;
+    :Borrower completes payment;
+repeat while (Item sent back within 24 hours?) is (no) not (yes)
+        :Order marked as "Completed";
+        :Lender notified of return completion;
+        :Borrower pushes "Confirm Item Returned" button;
+        :Item status updated to "Available";
+
+stop
+@enduml
+
+@startuml
+title User Likes an Item and Adds It to Wishlist
+
+start
+
+:User browses items;
+:User selects an item;
+:User clicks "Like" button;
+
+if (Item already in wishlist?) then (yes)
+    :Notify user "Item already in wishlist";
+else (no)
+    :Add item to user's wishlist;
+    :Notify user "Item added to wishlist";
+endif
+
+stop
+@enduml
+
+@startuml
+title Account Creation
+
+start
+
+:User navigates to the registration page;
+:User enters personal details (name, email, password);
+:Validate user input;
+
+if (Validation successful?) then (yes)
+    :Create new User object;
+    :Save user details in UserDatabase;
+    :Send confirmation email to user;
+    if (User confirms email?) then (yes)
+        :Mark account as "Verified";
+        :Notify user "Account successfully created";
+    else (no)
+        :Keep account as "Unverified";
+        :Send reminder email to confirm account;
+    endif
+else (no)
+    :Notify user of validation errors;
+    :Prompt user to re-enter details;
+endif
+
+stop
+@enduml
+
+@startuml
+title User Searches and Rents an Item
+
+start
+
+:User searches for an item;
+:Display search results;
+:User applies filters to refine results;
+:Display filtered results;
+:User selects an item;
+
+if (User wants to like the item?) then (yes)
+    :Add item to wishlist;
+endif
+
+if (User wants to rent the item?) then (yes)
+    if (Item is available?) then (yes)
+        :Place an order for the item;
+        :Notify lender of the order;
+    else (no)
+'        stop
+    endif
+endif
+
+stop
+@enduml
+
+@startuml
+title Leaving a Review
+
+start
+
+:User navigates to rented items;
+:User selects an item to review;
+:User clicks "Leave Review" button;
+:User enters rating and comment;
+:Create a new Review object;
+:Associate review with user and item;
+:Save review to database;
+:Notify user "Review submitted successfully";
+
+stop
+@enduml
+
+
+
+
+
+
+
+
+

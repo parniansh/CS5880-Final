@@ -1,0 +1,36 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+
+title Sequence Diagram: Borrower Returns Rentable Item
+
+actor Borrower
+actor Lender
+participant "System" as System
+participant "PaymentProcessor" as PaymentProcessor
+participant "NotificationService" as Notification
+
+
+Notification -> Borrower: Return due date reached
+loop Until item is returned
+    Borrower -> System: Push "Return Item" button
+    System -> System: Update order status to "Returning"
+'    System -> System: Update item status to "Unavailable"
+    System -> System: Calculate payment based on daily price
+    System -> PaymentProcessor: Direct borrower to payment page
+    Borrower -> PaymentProcessor: Complete payment
+    PaymentProcessor -> System: Confirm payment
+    Notification -> Borrower : Complete payment notification
+    alt Item sent back within 24 hours
+'        System -> System: Mark order as "Completed"
+        Notification -> Lender: Notify lender of return completion
+        Borrower -> System: Push "Confirm Item Returned" button
+        System -> System: Update item status to "Available"
+    else Item not returned within 24 hours
+        System -> System: Update order status to "unavailable"
+        System -> System: Calculate payment based on daily price
+        Notification -> Borrower: Notify additional charges
+end
+
+
+@enduml

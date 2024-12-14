@@ -1,0 +1,241 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+
+
+
+
+class User{
+-email: String
+-password: String
+-SSN: String
+-verified:boolean
+-Address: String
+-products:List<RentableItem>
+-lentProducts:List<product>
+-BorrowedProducts:List<RentableItem>
++update(message:String):void
+}
+
+class UserManager {
++createAccount(email:String,password:String):User
++deleteAccount(user:User):void
++updateAccount(user:User):void
+}
+
+class BankAccountInfo{
+-AccountNumber:String
+-bankName:String
+}
+
+class PaymentProcessor {
++processPayment(order:Order,amount:double):Transaction
++refundPayment(transaction:Transaction):void
+}
+
+class Transaction {
+-transactionId: String
+-order: Order
+-amount: double
+-status: String
+-timestamp: Date
+}
+
+
+abstract class RentableItem{
+-name:String
+-productDescription:String
+-category:ProductCategory
+-dailyRate:float
+-secureDepositAmount:float
+-Images:List<image>
++display()
+}
+
+class SearchManager {
++searchItems(keyword:String,filters:Map<String,String>):List<RentableItem>
++filterResults(items:List<RentableItem>,filters:Map<String,String>):List<RentableItem>
+}
+
+class Clothing{
+-Size:int
+-Color:Color
+-Fabric:String
+}
+
+class Book{
+-numberOfPages:int
+-Author:String
+}
+
+class Car{
+-brand:String
+-year:String
+-Color:Color
+}
+
+class image{
+-filePath: String
+-resolution: String
+-fileSize: int
+}
+
+class WishList{
+-name:String
+-RentableItem:List<RentableItem>
+}
+
+abstract class RentableItemFactory{
++createRentableItem(): RentableItem
+}
+
+class BookFactory{
++createRentableItem(): Book
+}
+
+class ClothingFactory{
++createRentableItem():Clothing
+}
+
+class CarFactory{
++createRentableItem():Car
+}
+
+abstract class RentableComponent{
++abstract display()
+}
+
+class Category{
+-categoryName :String
++display()
+}
+
+
+
+class UserDatabase {
++addUser(user:User):void
++findUser(email:String):User
++deleteUser(user:User):void
+}
+
+class Order{
+-rentableItem:RentableItem
+-startDate:Date
+-endDate:Date
+-borrower:User
+-lender:User
+-notificationHandler:NotificationHandler
++updateStatus(newStatus:String):void
++calculateCost():double
+}
+
+class NotificationHandler {
+-observers:List<User>
++addObserver(user:User):void
++removeObserver(user:User):void
++sendNotification(to:User,message:String):void
+}
+
+class AuthenticationServer{
+-firstStep:AuthenticationSteph
++authenticate(request):boolean
+}
+class AuthenticationRequest{
+-username:String
+-password:String
+-role:String
+-otp:String
+}
+
+abstract class AuthenticationStep{
+-next:AuthenticationStep
++handle():boolean
+}
+
+class CredentialChecker{
+-next:AuthenticationStep
++handle():boolean
+}
+
+class RoleChecker{
+-next:AuthenticationStep
++handle():boolean
+}
+
+class TwoFactorChecker{
+-next:AuthenticationStep
++handle():boolean
+}
+
+class Review {
+-reviewId:String
+-rating:int
+-comment:String
+-date:Date
+-user:User
+-item:RentableItem
++displayReview():void
+}
+
+class ReviewManager {
++addReview(user: User,item:RentableItem,rating:int,comment:String):Review
++getItemReviews(item:RentableItem):List<Review>
++getUserReviews(user: User):List<Review>
+}
+
+
+UserManager o-- User
+UserManager ..> UserDatabase
+
+User o-- BankAccountInfo
+PaymentProcessor o-- Transaction
+Order o-- PaymentProcessor
+Transaction o-- Order
+
+User <.. AuthenticationServer
+AuthenticationStep <.. AuthenticationServer
+AuthenticationStep <|-- CredentialChecker
+AuthenticationStep <|-- RoleChecker
+AuthenticationStep <|-- TwoFactorChecker
+AuthenticationRequest <.. AuthenticationStep
+UserDatabase <.. CredentialChecker
+UserDatabase <.. RoleChecker
+UserDatabase <.. TwoFactorChecker
+
+RentableItem <.. SearchManager
+
+RentableItem *-- image
+User *-- RentableItem
+User o-- WishList
+
+RentableItem <|-- Car
+RentableItem <|-- Clothing
+RentableItem <|-- Book
+
+RentableItemFactory <|-- CarFactory
+RentableItemFactory <|-- ClothingFactory
+RentableItemFactory <|-- BookFactory
+Car <.. CarFactory
+Clothing <.. ClothingFactory
+Book <.. BookFactory
+
+RentableItem <.. RentableItemFactory
+
+
+RentableComponent <|-- RentableItem
+RentableComponent <|-- Category
+
+User o-- Order
+RentableItem o-- Order
+
+NotificationHandler o-- User
+Order o-- User : borrower/lender
+Order o-- NotificationHandler
+
+
+User "1" o-- "*" Review : "writes"
+RentableItem "1" o-- "*" Review : "has"
+ReviewManager ..> Review : "manages"
+ReviewManager ..> User
+ReviewManager ..> RentableItem
+@enduml
