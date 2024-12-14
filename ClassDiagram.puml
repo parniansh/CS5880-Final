@@ -1,0 +1,186 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+
+
+
+
+class User{
+-firstname: String
+-lastname:String
+-SSN: String
+-verified:boolean
+-Address: String
+-products:List<RentableItem>
+-lentProducts:List<product>
+-BorrowedProducts:List<RentableItem>
++update(message:String):void
+}
+
+class BankAccountInfo{
+-AccountNumber:String
+-bankName:String
+}
+
+
+abstract class RentableItem{
+-name:String
+-productDescription:String
+-category:ProductCategory
+-dailyRate:float
+-secureDepositAmount:float
+-Images:List<image>
++display()
+}
+
+class Clothing{
+-Size:int
+-Color:Color
+-Fabric:String
+}
+
+class Book{
+-numberOfPages:int
+-Author:String
+}
+
+class Car{
+-brand:String
+-year:String
+-Color:Color
+}
+
+class image{
+-filePath: String
+-resolution: String
+-fileSize: int
+}
+
+class WishList{
+-name:String
+-RentableItem:List<RentableItem>
+}
+
+abstract class RentableItemFactory{
++createRentableItem(): RentableItem
+}
+
+class BookFactory{
++createRentableItem(): Book
+}
+
+class ClothingFactory{
++createRentableItem():Clothing
+}
+
+class CarFactory{
++createRentableItem():Car
+}
+
+abstract class RentableComponent{
++abstract display()
+}
+
+class Category{
+-categoryName :String
++display()
+}
+
+
+class UserDatabase{
++addUser(user:User)
++findUser(user:User)
+}
+
+class Order{
+-rentableItem:RentableItem
+-startDate:Date
+-endDate:Date
+-borrower:User
+-lender:User
+-notificationHandler:NotificationHandler
++updateStatus(newStatus:String):void
++calculateCost():double
+}
+
+class NotificationHandler {
+-observers:List<User>
++addObserver(user:User):void
++removeObserver(user:User):void
++sendNotification(to:User,message:String):void
+}
+
+class AuthenticationServer{
+-firstStep:AuthenticationSteph
++authenticate(request):boolean
+}
+class AuthenticationRequest{
+-username:String
+-password:String
+-role:String
+-otp:String
+}
+
+abstract class AuthenticationStep{
+-next:AuthenticationStep
++handle():boolean
+}
+
+class CredentialChecker{
+-next:AuthenticationStep
++handle():boolean
+}
+
+class RoleChecker{
+-next:AuthenticationStep
++handle():boolean
+}
+
+class TwoFactorChecker{
+-next:AuthenticationStep
++handle():boolean
+}
+
+
+
+
+User o-- BankAccountInfo
+User <.. AuthenticationServer
+
+AuthenticationStep <.. AuthenticationServer
+AuthenticationStep <|-- CredentialChecker
+AuthenticationStep <|-- RoleChecker
+AuthenticationStep <|-- TwoFactorChecker
+AuthenticationRequest <.. AuthenticationStep
+UserDatabase <.. CredentialChecker
+UserDatabase <.. RoleChecker
+UserDatabase <.. TwoFactorChecker
+
+User *-- RentableItem
+RentableItem *-- image
+User o-- WishList
+
+RentableItem <|-- Car
+RentableItem <|-- Clothing
+RentableItem <|-- Book
+
+RentableItemFactory <|-- CarFactory
+RentableItemFactory <|-- ClothingFactory
+RentableItemFactory <|-- BookFactory
+Car <.. CarFactory
+Clothing <.. ClothingFactory
+Book <.. BookFactory
+
+RentableItem <.. RentableItemFactory
+
+
+RentableComponent <|-- RentableItem
+RentableComponent <|-- Category
+
+User o-- Order
+RentableItem o-- Order
+
+NotificationHandler o-- User
+Order o-- User : borrower/lender
+Order o-- NotificationHandler
+@enduml
